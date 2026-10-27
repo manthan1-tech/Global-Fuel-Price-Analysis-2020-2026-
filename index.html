@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Global Fuel Prices and Taxation Trends (2020–2026), an interactive Tableau dashboard and story by Manthan Patidar.">
+  <meta name="author" content="Manthan Patidar">
+  <title>Global Fuel Prices and Taxation Trends (2020–2026) | Manthan Patidar</title>
+  <style>
+    :root {
+      --ink: #17251f;
+      --muted: #64736b;
+      --paper: #f6f8f3;
+      --surface: #ffffff;
+      --green: #1e5b43;
+      --green-dark: #123d2d;
+      --lime: #c7e58a;
+      --border: #dfe7dc;
+      --shadow: 0 12px 35px rgba(18, 61, 45, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; }
+    .container { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    header {
+      background: rgba(246, 248, 243, 0.94);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+    }
+    .brand {
+      font-size: 1.12rem;
+      font-weight: 850;
+      letter-spacing: -0.04em;
+      color: var(--green-dark);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand span { color: #719c3a; }
+    nav { display: flex; gap: 22px; flex-wrap: wrap; }
+    nav a {
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 650;
+      color: #46584e;
+    }
+    nav a:hover { color: var(--green); }
+    .hero { padding: 76px 0 58px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.8fr);
+      align-items: center;
+      gap: 42px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--green);
+      background: #e8f1dd;
+      border: 1px solid #d5e6c4;
+      border-radius: 999px;
+      padding: 7px 13px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 20px 0 18px;
+      font-size: clamp(2.4rem, 5vw, 4.6rem);
+      line-height: 1.04;
+      letter-spacing: -0.065em;
+      color: var(--green-dark);
+    }
+    .hero p { max-width: 690px; color: var(--muted); font-size: 1.08rem; }
+    .author { font-weight: 750; color: var(--green-dark) !important; margin-top: 24px; }
+    .hero-panel {
+      background: var(--green-dark);
+      color: #fff;
+      border-radius: 26px;
+      padding: 30px;
+      min-height: 275px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-panel::after {
+      content: "";
+      width: 220px;
+      height: 220px;
+      border: 38px solid rgba(199, 229, 138, 0.14);
+      border-radius: 50%;
+      position: absolute;
+      right: -70px;
+      bottom: -95px;
+    }
+    .hero-panel .panel-label {
+      color: var(--lime);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .hero-panel h2 { font-size: 1.8rem; line-height: 1.15; margin: 18px 0 12px; }
+    .hero-panel p { color: #d7e4da; font-size: 0.96rem; }
+    .section { padding: 38px 0 72px; scroll-margin-top: 95px; }
+    .section-heading { margin-bottom: 24px; }
+    .section-heading .kicker {
+      color: #719c3a;
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    h2.section-title {
+      color: var(--green-dark);
+      font-size: clamp(1.8rem, 3vw, 2.65rem);
+      letter-spacing: -0.045em;
+      line-height: 1.15;
+      margin: 8px 0;
+    }
+    .section-heading p { max-width: 750px; color: var(--muted); margin: 8px 0 0; }
+    .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .insight {
+      padding: 23px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .insight .number { color: #719c3a; font-weight: 900; font-size: 0.8rem; letter-spacing: 0.1em; }
+    .insight h3 { color: var(--green-dark); margin: 9px 0 7px; font-size: 1.08rem; }
+    .insight p { color: var(--muted); margin: 0; font-size: 0.94rem; }
+    .viz-shell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .tableau-frame {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .tableau-frame iframe {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: #fff;
+    }
+    .tableauPlaceholder { width: 100% !important; }
+    .tableauViz { width: 100% !important; }
+    .viz-shell { padding: clamp(8px, 1.5vw, 18px); }
+    #viz1793091752164 { min-height: 620px; }
+    #viz1793091847503 { max-width: 100%; }
+    @media (max-width: 800px) {
+      .hero-grid { gap: 26px; }
+      .hero-panel { min-height: auto; }
+      #viz1793091752164 { min-height: 900px; }
+      #viz1793091847503 { min-height: 760px; }
+      .section { padding: 30px 0 48px; }
+    }
+    @media (max-width: 520px) {
+      .brand { font-size: 1rem; }
+      nav { gap: 10px 14px; }
+      nav a { font-size: .85rem; }
+      h1 { font-size: clamp(2.15rem, 11vw, 3rem); }
+      .hero p { font-size: 1rem; }
+      .viz-shell { border-radius: 14px; }
+      #viz1793091752164 { min-height: 1100px; }
+      #viz1793091847503 { min-height: 850px; }
+    }
+    .viz-note { color: var(--muted); font-size: 0.88rem; margin: 14px 4px 2px; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .about-card {
+      background: #edf3e8;
+      border: 1px solid #dce8d4;
+      border-radius: 20px;
+      padding: 27px;
+    }
+    .about-card h3 { color: var(--green-dark); margin-top: 0; }
+    .about-card p, .about-card li { color: #53665a; }
+    .about-card ul { padding-left: 21px; }
+    .project-footer {
+      background: var(--green-dark);
+      color: #fff;
+      padding: 32px 0;
+      margin-top: 12px;
+    }
+    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .project-footer p { color: #d7e4da; margin: 4px 0; }
+    .back-top { color: var(--lime); text-decoration: none; font-weight: 700; }
+    @media (max-width: 800px) {
+      .hero { padding-top: 48px; }
+      .hero-grid, .about-grid { grid-template-columns: 1fr; }
+      .insight-grid { grid-template-columns: 1fr; }
+      .nav { padding: 14px 0; align-items: flex-start; flex-direction: column; }
+      nav { gap: 14px; }
+      .container { width: min(100% - 28px, 1180px); }
+      .viz-shell { padding: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#home">Fuel<span>Scope</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="#insights">Focus Areas</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#story">Story</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Interactive data project · 2020–2026</span>
+          <h1>Global Fuel Prices and Taxation Trends</h1>
+          <p>
+            Explore global fuel-price patterns and taxation trends through an interactive Tableau dashboard
+            and a focused story comparing the top three countries.
+          </p>
+          <p class="author">Project by Manthan Patidar</p>
+        </div>
+        <aside class="hero-panel">
+          <div class="panel-label">Project overview</div>
+          <h2>Fuel prices, taxes, and global comparisons.</h2>
+          <p>Use the dashboard to explore the visual analysis, then follow the story to review the comparison of three countries.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-heading">
+          <span class="kicker">About the project</span>
+          <h2 class="section-title">Understanding fuel-price trends</h2>
+          <p>This project presents an interactive view of global fuel prices and taxation trends from 2020 to 2026. The visualizations are hosted on Tableau Public and embedded below.</p>
+        </div>
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>Project objective</h3>
+            <p>Make it easier to explore fuel-price patterns over time and compare differences between countries using interactive visualizations.</p>
+          </article>
+          <article class="about-card">
+            <h3>How to explore</h3>
+            <ul>
+              <li>Start with the dashboard for the overall analysis.</li>
+              <li>Use available Tableau controls and filters to explore the views.</li>
+              <li>Continue to the story for the top-three-country comparison.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="insights">
+      <div class="container">
+        <div class="section-heading">
+          <span class="kicker">Analysis areas</span>
+          <h2 class="section-title">What to explore</h2>
+          <p>Use the published Tableau views to investigate the project’s main themes.</p>
+        </div>
+        <div class="insight-grid">
+          <article class="insight">
+            <div class="number">01 / TRENDS</div>
+            <h3>Fuel prices over time</h3>
+            <p>Explore the global fuel-price trend across the 2020–2026 period.</p>
+          </article>
+          <article class="insight">
+            <div class="number">02 / TAXATION</div>
+            <h3>Taxation patterns</h3>
+            <p>Review the taxation-related comparisons presented in the dashboard.</p>
+          </article>
+          <article class="insight">
+            <div class="number">03 / COMPARISON</div>
+            <h3>Country-level story</h3>
+            <p>Continue to the Tableau story for the top-three-country comparison.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="dashboard">
+      <div class="container">
+        <div class="section-heading">
+          <span class="kicker">Interactive visualization</span>
+          <h2 class="section-title">Global fuel prices and taxation dashboard</h2>
+          <p>Interact with the embedded Tableau dashboard below. The view is published on Tableau Public.</p>
+        </div>
+        <div class="viz-shell">
+          <div class="tableauPlaceholder" id="viz1793091752164" style="position: relative; width: 100%;">
+            <noscript><a href="#"><img alt="Global Fuel Prices and Taxation Trends (2020-2026)" src="https://public.tableau.com/static/images/Gl/GlobalAverageFuelPricesTrend2020-2026Dashboard_17930917274720/GlobalFuelPricesandTaxationTrends2020-2026/1_rss.png" style="border: none; max-width: 100%;" /></a></noscript>
+            <object class="tableauViz" style="display:none;">
+              <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+              <param name="embed_code_version" value="3" />
+              <param name="site_root" value="" />
+              <param name="name" value="GlobalAverageFuelPricesTrend2020-2026Dashboard_17930917274720/GlobalFuelPricesandTaxationTrends2020-2026" />
+              <param name="tabs" value="no" />
+              <param name="toolbar" value="yes" />
+              <param name="static_image" value="https://public.tableau.com/static/images/Gl/GlobalAverageFuelPricesTrend2020-2026Dashboard_17930917274720/GlobalFuelPricesandTaxationTrends2020-2026/1.png" />
+              <param name="animate_transition" value="yes" />
+              <param name="display_static_image" value="yes" />
+              <param name="display_spinner" value="yes" />
+              <param name="display_overlay" value="yes" />
+              <param name="display_count" value="yes" />
+              <param name="language" value="en-US" />
+              <param name="filter" value="publish=yes" />
+            </object>
+          </div>
+          <p class="viz-note">If the visualization does not load, check your internet connection and confirm the Tableau view is publicly accessible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="story">
+      <div class="container">
+        <div class="section-heading">
+          <span class="kicker">Tableau story</span>
+          <h2 class="section-title">Fuel price comparison — top 3 countries</h2>
+          <p>Explore the published story to follow the country comparison in sequence.</p>
+        </div>
+        <div class="viz-shell">
+          <div class="tableauPlaceholder" id="viz1793091847503" style="position: relative; width: 100%;">
+            <noscript><a href="#"><img alt="Fuel Price Comparison - Top 3 Countries" src="https://public.tableau.com/static/images/Gl/GlobalAverageFuelPricesTrend2020-2026Story_17930918279750/FuelPriceComparison-Top3Countriesstory/1_rss.png" style="border: none; max-width: 100%;" /></a></noscript>
+            <object class="tableauViz" style="display:none;">
+              <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F" />
+              <param name="embed_code_version" value="3" />
+              <param name="site_root" value="" />
+              <param name="name" value="GlobalAverageFuelPricesTrend2020-2026Story_17930918279750/FuelPriceComparison-Top3Countriesstory" />
+              <param name="tabs" value="no" />
+              <param name="toolbar" value="yes" />
+              <param name="static_image" value="https://public.tableau.com/static/images/Gl/GlobalAverageFuelPricesTrend2020-2026Story_17930918279750/FuelPriceComparison-Top3Countriesstory/1.png" />
+              <param name="animate_transition" value="yes" />
+              <param name="display_static_image" value="yes" />
+              <param name="display_spinner" value="yes" />
+              <param name="display_overlay" value="yes" />
+              <param name="display_count" value="yes" />
+              <param name="language" value="en-US" />
+              <param name="filter" value="publish=yes" />
+            </object>
+          </div>
+          <p class="viz-note">If the story does not load, open the published Tableau story directly to check its availability.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="project-footer">
+    <div class="container footer-row">
+      <div>
+        <strong>Global Fuel Prices and Taxation Trends (2020–2026)</strong>
+        <p>Created by Manthan Patidar</p>
+      </div>
+      <a class="back-top" href="#home">Back to top ↑</a>
+    </div>
+  </footer>
+
+
+
+
+\n
+  <script type="text/javascript">
+    (function () {
+      function loadTableauViz(id, mobileHeight, ratio) {
+        var divElement = document.getElementById(id);
+        if (!divElement) return;
+        var vizElement = divElement.getElementsByTagName('object')[0];
+        if (!vizElement) return;
+
+        function sizeViz() {
+          var width = divElement.offsetWidth || divElement.parentElement.offsetWidth;
+          vizElement.style.width = '100%';
+          if (width > 500) {
+            vizElement.style.height = Math.round(width * ratio) + 'px';
+          } else {
+            vizElement.style.height = mobileHeight + 'px';
+          }
+        }
+
+        sizeViz();
+        window.addEventListener('resize', sizeViz);
+
+        var scriptElement = document.createElement('script');
+        scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+        vizElement.parentNode.insertBefore(scriptElement, vizElement);
+      }
+
+      loadTableauViz('viz1793091752164', 2427, 0.75);
+      loadTableauViz('viz1793091847503', 991, 991 / 1016);
+    })();
+  </script>
+
+</body>
+</html>
